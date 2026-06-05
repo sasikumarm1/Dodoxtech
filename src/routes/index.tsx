@@ -17,6 +17,7 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
+      
       { title: "DodoX Tech — Software & AI Automation Studio" },
       {
         name: "description",

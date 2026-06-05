@@ -1,8 +1,9 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const stats = [
-  { value: "50+", label: "Projects Delivered" },
+  { value: "10+", label: "Projects Delivered" },
   { value: "12+", label: "Industries Served" },
   { value: "98%", label: "Client Retention" },
   { value: "24/7", label: "Support" },
@@ -35,14 +36,14 @@ function SplitWords({ text, className, delay = 0 }: { text: string; className?: 
 
 export function About() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const isMobile = useIsMobile();
 
   // Parallax is heavy, skip scroll tracking on mobile viewports
   const { scrollYProgress } = useScroll({
     target: isMobile ? undefined : sectionRef,
     offset: ["start end", "end start"],
   });
-  
+
   const bgScale = useTransform(scrollYProgress, [0, 1], [0.9, 1.1]);
 
   return (
@@ -111,7 +112,7 @@ export function About() {
             >
               {/* Hover glow */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-br from-[#67e8f9]/[0.07] to-transparent pointer-events-none" />
-              
+
               {/* Top border lines */}
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#67e8f9]/20 to-transparent" />
 

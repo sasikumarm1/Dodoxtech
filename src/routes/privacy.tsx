@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
-import dodoxLogo from "@/assets/dodox-logo.png";
+import dodoxLogo from "@/assets/dodox-logo.webp";
 
 export const Route = createFileRoute("/privacy")({
   component: PrivacyPage,

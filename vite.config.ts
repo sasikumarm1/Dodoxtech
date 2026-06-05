@@ -14,12 +14,12 @@ export default defineConfig({
   },
   vite: {
     server: {
-      port: 80,
+      port: 8080,
       host: true,
       allowedHosts: true,
     },
     preview: {
-      port: 80,
+      port: 8080,
       host: true,
       allowedHosts: true,
     },

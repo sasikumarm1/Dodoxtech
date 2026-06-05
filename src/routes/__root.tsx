@@ -85,13 +85,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "http://dodoxtechs.in" },
+      { property: "og:image", content: "http://dodoxtechs.in/dodox-logo.webp" },
+      { property: "og:image:width", content: "1500" },
+      { property: "og:image:height", content: "700" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@DodoxTech" },
+      { name: "twitter:image", content: "http://dodoxtechs.in/dodox-logo.webp" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "64x64",
+        href: "/favicon-64.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32.png",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/favicon-64.png",
       },
       {
         rel: "canonical",
@@ -119,11 +139,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { SmoothScroll } from "../components/site/SmoothScroll";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SmoothScroll />
       <Outlet />
     </QueryClientProvider>
   );

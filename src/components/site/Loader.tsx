@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import dodoxLogo from "@/assets/dodox-logo.png";
+import dodoxLogo from "@/assets/dodox-logo.webp";
 
 export function Loader() {
   const [done, setDone] = useState(false);
@@ -51,48 +51,21 @@ export function Loader() {
           >
             {/* Logo */}
             <motion.div
-              initial={{ scale: 0.7, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              style={{ position: "relative", marginBottom: 20 }}
+              style={{ position: "relative", marginBottom: 24 }}
             >
               <img
                 src={dodoxLogo}
                 alt="DodoX Tech"
                 style={{
-                  width: 80,
-                  height: 80,
+                  height: 48,
+                  width: "auto",
                   objectFit: "contain",
-                  filter: "drop-shadow(0 0 22px rgba(103,232,249,0.6))",
+                  filter: "drop-shadow(0 0 15px rgba(103,232,249,0.4))",
                 }}
               />
-              {/* Spinning ring */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-                style={{
-                  position: "absolute",
-                  inset: -8,
-                  borderRadius: 22,
-                  border: "1px dashed rgba(103,232,249,0.25)",
-                  pointerEvents: "none",
-                }}
-              />
-            </motion.div>
-
-            {/* Brand */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.5 }}
-              style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 4 }}
-            >
-              <span style={{ fontSize: 24, fontWeight: 700, color: "#f8fafc", letterSpacing: "-0.02em" }}>
-                DodoX
-              </span>
-              <span style={{ fontSize: 24, fontWeight: 700, color: "#67e8f9", letterSpacing: "-0.02em" }}>
-                Tech
-              </span>
             </motion.div>
 
             {/* Tagline */}

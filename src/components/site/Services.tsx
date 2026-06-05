@@ -6,7 +6,7 @@ const services = [
   { icon: Globe, title: "Website Development", desc: "High-performance, cinematic web experiences." },
   { icon: Smartphone, title: "Mobile App Development", desc: "Native-feel iOS & Android apps." },
   { icon: Brain, title: "AI Automation", desc: "Intelligent agents that work 24/7." },
-  { icon: Database, title: "ERPNextServices Development", desc: "Tailored ERP platforms end-to-end." },
+  { icon: Database, title: "ERPNext Development", desc: "Tailored ERP platforms end-to-end." },
   { icon: Settings, title: "ERPNext Customization", desc: "Workflows, forms, reports, integrations." },
   { icon: LayoutDashboard, title: "Admin Dashboards", desc: "Real-time analytics, beautiful UI." },
   { icon: Briefcase, title: "Business Management Systems", desc: "Operate every department from one console." },
@@ -85,7 +85,7 @@ export function Services() {
       return ["AI Automation", "AI-Based Systems", "Automation Tools", "Python / UiPath Automation"].includes(s.title);
     }
     if (activeCategory === "ERP & Business Systems") {
-      return ["ERPNextServices Development", "ERPNext Customization", "Business Management Systems", "Admin Dashboards"].includes(s.title);
+      return ["ERPNext Development", "ERPNext Customization", "Business Management Systems", "Admin Dashboards"].includes(s.title);
     }
     if (activeCategory === "Development") {
       return ["Website Development", "Mobile App Development", "Full Stack Development"].includes(s.title);
@@ -99,7 +99,7 @@ export function Services() {
   return (
     <section id="services" className="relative py-12 sm:py-20">
       <div className="mx-auto max-w-7xl px-5 sm:px-6">
-        
+
         {/* Centered / clean header layout with category filters */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="max-w-2xl">
@@ -122,11 +122,10 @@ export function Services() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`shrink-0 px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer ${
-                  active
+                className={`shrink-0 px-5 py-2.5 rounded-full text-xs font-semibold tracking-wider transition-all duration-300 cursor-pointer ${active
                     ? "silver-gradient text-[#030712] shadow-[0_0_15px_rgba(103,232,249,0.25)] scale-102"
                     : "bg-white/[0.02] border border-white/5 text-white/55 hover:text-white hover:bg-white/[0.04]"
-                }`}
+                  }`}
               >
                 {cat}
               </button>
@@ -135,8 +134,8 @@ export function Services() {
         </div>
 
         {/* Dynamic Animated Grid */}
-        <motion.div 
-          layout 
+        <motion.div
+          layout
           className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
         >
           <AnimatePresence mode="popLayout">

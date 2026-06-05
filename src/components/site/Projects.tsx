@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, ExternalLink } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ArrowUpRight, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import useEmblaCarousel from "embla-carousel-react";
+import { EmblaCarouselType } from "embla-carousel";
 import p1 from "@/assets/project-extension.jpg";
 import p2 from "@/assets/project-silambam.jpg";
 import p3 from "@/assets/project-n8n.jpg";
 import p4 from "@/assets/project-erp.jpg";
 import p5 from "@/assets/project-school.jpg";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 type Project = {
   img: string;
@@ -25,40 +26,37 @@ const projects: Project[] = [
     title: "AI-Powered Product Extraction Extension",
     desc: "Smart browser extension that automates product data extraction using AI-powered attribute matching and schema-based processing.",
     tech: ["Chrome APIs", "JavaScript", "JSON", "Excel"],
-    color: "rgba(103,232,249,0.08)",
+    color: "rgba(56,189,248,0.12)",
   },
   {
     img: p2, tag: "Mobile App", year: "2025",
     title: "Vagai Silambam Management App",
     desc: "Modern mobile application for managing student attendance, records and training workflows for martial arts institutions.",
     tech: ["React Native", "Realtime", "Dashboard"],
-    link: "https://vagai-silambam.lovable.app",
-    color: "rgba(209,213,219,0.06)",
+    color: "rgba(248,250,252,0.06)",
   },
   {
     img: p3, tag: "AI Automation · n8n", year: "2025",
     title: "AI-Powered N8N Automation System",
     desc: "Automated ERP document processing using n8n, OCR and AI classification — invoices, POs, RFQs and quotations.",
     tech: ["n8n", "MongoDB", "OCR", "AI"],
-    color: "rgba(103,232,249,0.08)",
+    color: "rgba(56,189,248,0.12)",
   },
   {
     img: p4, tag: "ERPNext", year: "2024",
     title: "ERPNext Textile & Manufacturing Solution",
     desc: "Customized ERPNext implementation for purchase, sales, inventory, invoicing, payments and production workflows.",
     tech: ["ERPNext", "Custom Modules", "API"],
-    color: "rgba(209,213,219,0.06)",
+    color: "rgba(248,250,252,0.06)",
   },
   {
     img: p5, tag: "ERPNext · Education", year: "2024",
     title: "ERPNext School Management System",
     desc: "Customized ERPNext platform for admissions, fees, attendance, timetables, exams and staff management.",
     tech: ["ERPNext", "Workflows", "Reports"],
-    color: "rgba(103,232,249,0.06)",
+    color: "rgba(248,250,252,0.06)",
   },
 ];
-
-const projectCategories = ["All", "AI Automation", "ERPNext", "Mobile Apps"];
 
 /** Fires once when the element enters viewport — zero JS scroll overhead */
 function useOnce(threshold = 0.08) {
@@ -80,153 +78,75 @@ function useOnce(threshold = 0.08) {
   return ref;
 }
 
-/* ─── Mobile stack card ───────────────────────────────────────────────── */
-function MobileCard({ p, i }: { p: Project; i: number }) {
+/* ─── GTA Style Polaroid Card ───────────────────────────────────────────── */
+function GTAProjectCard({ p, i, total }: { p: Project; i: number; total: number }) {
   const ref = useOnce(0.08) as React.RefObject<HTMLElement>;
+  // Alternate rotation for the polaroid effect
+  const rotation = i % 2 === 0 ? '-rotate-2' : 'rotate-2';
+
   return (
     <article
       ref={ref}
-      className="project-reveal group glass-strong rounded-3xl overflow-hidden hairline-border"
+      className="project-reveal group relative flex flex-col gap-6 h-full"
       data-visible={undefined}
       style={{ animationDelay: `${i * 0.07}s` }}
     >
-      <div className="relative aspect-[16/9] overflow-hidden">
-        <img src={p.img} alt={p.title} loading="lazy" decoding="async"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#030712]/80 via-[#030712]/20 to-transparent" />
-        <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
-          <span className="glass rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest text-white/85">{p.tag}</span>
-          <span className="glass rounded-full px-2.5 py-1 text-[10px] uppercase tracking-widest text-white/50">{p.year}</span>
-        </div>
-        <div className="absolute bottom-3 right-3 glass rounded-full px-2.5 py-1 text-[10px] tracking-widest text-white/60">
-          {String(i + 1).padStart(2, "0")}
-        </div>
-      </div>
-      <div className="p-5">
-        <h3 className="text-base font-semibold text-white/95 tracking-tight leading-snug">{p.title}</h3>
-        <p className="mt-2 text-sm text-white/55 leading-relaxed">{p.desc}</p>
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {p.tech.map((t) => (
-            <span key={t} className="text-[10px] uppercase tracking-widest text-white/50 glass px-2.5 py-1 rounded-full">{t}</span>
-          ))}
-        </div>
-      </div>
-    </article>
-  );
-}
-
-/* ─── Desktop editorial row ───────────────────────────────────────────── */
-function DesktopRow({ p, i, total }: { p: Project; i: number; total: number }) {
-  const rowRef = useOnce(0.05) as React.RefObject<HTMLElement>;
-  const imgRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const reverse = i % 2 === 1;
-
-  // Add visible class to child elements on parent reveal
-  useEffect(() => {
-    const el = rowRef.current;
-    if (!el) return;
-    const obs = new MutationObserver(() => {
-      if (el.dataset.visible === "true") {
-        if (imgRef.current) imgRef.current.dataset.visible = "true";
-        if (textRef.current) textRef.current.dataset.visible = "true";
-        obs.disconnect();
-      }
-    });
-    obs.observe(el, { attributes: true });
-    return () => obs.disconnect();
-  }, [rowRef]);
-
-  return (
-    <article
-      ref={rowRef}
-      className="project-reveal group py-16 grid lg:grid-cols-12 gap-8 lg:gap-14 items-center border-t border-white/[0.06] first:border-t-0"
-      data-visible={undefined}
-    >
-      {/* Index number — big typographic accent */}
-      <div
-        ref={imgRef as React.RefObject<HTMLDivElement>}
-        className={`lg:col-span-7 project-reveal-left ${reverse ? "lg:order-2" : ""}`}
-        data-visible={undefined}
+      {/* Polaroid Frame */}
+      <div 
+        className={`relative bg-[#f8fafc] p-3 pb-12 sm:pb-16 rounded-sm shadow-2xl transition-transform duration-500 hover:scale-[1.02] hover:z-20 ${rotation}`}
+        style={{ boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1)" }}
       >
-        <div
-          className="relative rounded-3xl overflow-hidden glass-strong hairline-border transition-transform duration-500 ease-out hover:scale-[1.013]"
-          style={{ boxShadow: `0 0 60px ${p.color}, 0 0 0 1px rgba(255,255,255,0.06)` }}
-        >
-          <div className="relative aspect-[16/10] overflow-hidden">
-            <img
-              src={p.img} alt={p.title} loading="lazy" decoding="async"
-              className="w-full h-full object-cover transition-transform duration-[1s] ease-out group-hover:scale-[1.05]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#030712]/50 via-transparent to-transparent pointer-events-none" />
-
-            {/* Tag badge */}
-            <div className="absolute top-4 left-4">
-              <span className="glass-strong rounded-full px-3.5 py-1.5 text-[11px] uppercase tracking-widest text-white/90 font-medium">
-                {p.tag}
-              </span>
-            </div>
-
-            {/* Project counter */}
-            <div className="absolute bottom-4 right-4 font-mono text-[11px] text-white/40 tracking-widest">
-              {String(i + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-            </div>
-
-            {/* Shimmer on hover */}
-            <div
-              className="absolute inset-0 pointer-events-none -translate-x-full group-hover:translate-x-[200%] skew-x-12"
-              style={{
-                background: "linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent)",
-                transition: "transform 1.0s cubic-bezier(0.16,1,0.3,1)",
-              }}
-            />
+        <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-black">
+          <img 
+            src={p.img} 
+            alt={p.title} 
+            loading="lazy" 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+          
+          {/* Tag badge inside image */}
+          <div className="absolute top-3 left-3 flex gap-2">
+            <span className="bg-black/70 backdrop-blur-md rounded-sm px-2.5 py-1 text-[10px] uppercase tracking-widest text-white/90">
+              {p.tag}
+            </span>
           </div>
         </div>
+        
+        {/* Handwriting or label on the polaroid bottom */}
+        <div className="absolute bottom-3 sm:bottom-4 left-4 right-4 flex justify-between items-center text-black/80 font-mono text-xs sm:text-sm">
+          <span className="truncate pr-4 opacity-70 uppercase font-bold tracking-widest">{p.title.split(' ')[0]} {p.title.split(' ')[1]}</span>
+          <span className="opacity-50">{String(i + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</span>
+        </div>
       </div>
 
-      {/* Text column */}
-      <div
-        ref={textRef as React.RefObject<HTMLDivElement>}
-        className={`lg:col-span-5 project-reveal-right ${reverse ? "lg:order-1" : ""}`}
-        data-visible={undefined}
-      >
-        {/* Large typographic index */}
-        <div className="text-[80px] font-black leading-none text-white/[0.04] select-none mb-1 -ml-1 font-mono">
-          {String(i + 1).padStart(2, "0")}
-        </div>
-
-        <p className="text-[11px] uppercase tracking-[0.3em] text-white/35 mb-3 font-semibold -mt-2">
-          {p.year} · Case Study
+      {/* Description Card Overlapping */}
+      <div className="glass-strong p-6 sm:p-8 rounded-2xl relative z-10 -mt-10 sm:-mt-12 mx-2 sm:mx-6 flex-grow flex flex-col">
+        <p className="text-[11px] uppercase tracking-[0.3em] text-cyan-soft mb-2 font-bold">
+          {p.year}
         </p>
-        <h3 className="text-2xl md:text-[1.75rem] font-bold text-platinum tracking-tight leading-[1.18]">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-platinum tracking-tight leading-snug mb-3">
           {p.title}
         </h3>
-        <p className="mt-4 text-white/55 leading-relaxed text-sm md:text-[0.95rem]">
+        <p className="text-sm text-white/60 leading-relaxed mb-6 flex-grow">
           {p.desc}
         </p>
-
-        <div className="mt-6 flex flex-wrap gap-2">
-          {p.tech.map((t) => (
-            <span
-              key={t}
-              className="text-[10px] uppercase tracking-widest text-white/50 glass px-3 py-1 rounded-full font-medium transition-colors duration-200 hover:text-white/80"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        <div className="mt-8">
+        
+        <div className="mt-auto">
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {p.tech.map((t) => (
+              <span key={t} className="text-[9px] sm:text-[10px] uppercase tracking-widest text-white/50 glass px-2.5 py-1 rounded-full">
+                {t}
+              </span>
+            ))}
+          </div>
+          
           {p.link ? (
-            <a
-              href={p.link} target="_blank" rel="noopener noreferrer"
-              className="group/btn inline-flex items-center gap-2.5 rounded-full silver-gradient text-[#030712] px-6 py-3 text-sm font-semibold hover:-translate-y-0.5 transition-transform duration-300"
-            >
-              View Project
-              <ExternalLink className="h-3.5 w-3.5 transition-transform group-hover/btn:scale-110" />
+            <a href={p.link} target="_blank" rel="noopener noreferrer" className="group/btn inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-cyan-soft transition-colors w-max">
+              View Project <ExternalLink className="h-4 w-4 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
             </a>
           ) : (
-            <span className="inline-flex items-center gap-2 rounded-full glass px-6 py-3 text-sm text-white/55">
+            <span className="inline-flex items-center gap-2 text-sm text-white/40 font-medium">
               Private Engagement <ArrowUpRight className="h-4 w-4" />
             </span>
           )}
@@ -238,9 +158,71 @@ function DesktopRow({ p, i, total }: { p: Project; i: number; total: number }) {
 
 /* ─── Section ─────────────────────────────────────────────────────────── */
 export function Projects() {
-  const isMobile = useIsMobile();
   const headRef = useOnce(0.1) as React.RefObject<HTMLElement>;
   const [activeCategory, setActiveCategory] = useState("All");
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    dragFree: true, 
+    containScroll: "trimSnaps",
+    align: "start"
+  });
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const onScroll = useCallback((api: EmblaCarouselType) => {
+    const progress = Math.max(0, Math.min(1, api.scrollProgress()));
+    setScrollProgress(progress * 100);
+  }, []);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onScroll(emblaApi);
+    emblaApi.on("scroll", onScroll);
+    emblaApi.on("reInit", onScroll);
+  }, [emblaApi, onScroll]);
+
+  // Handle vertical mouse wheel scroll to navigate the carousel horizontally
+  useEffect(() => {
+    if (!emblaApi) return;
+    const rootNode = emblaApi.rootNode();
+    if (!rootNode) return;
+
+    let lastScrollTime = 0;
+    const handleWheel = (e: WheelEvent) => {
+      // Prioritize vertical scrolling adjustments
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        const now = Date.now();
+        
+        // Cooldown of 400ms to allow slides to transition smoothly
+        if (now - lastScrollTime < 400) {
+          // Prevent page scroll only if we are actively navigating the carousel
+          if ((e.deltaY > 0 && emblaApi.canScrollNext()) || (e.deltaY < 0 && emblaApi.canScrollPrev())) {
+            e.preventDefault();
+          }
+          return;
+        }
+
+        if (Math.abs(e.deltaY) > 10) {
+          if (e.deltaY > 0) {
+            if (emblaApi.canScrollNext()) {
+              e.preventDefault();
+              emblaApi.scrollNext();
+              lastScrollTime = now;
+            }
+          } else {
+            if (emblaApi.canScrollPrev()) {
+              e.preventDefault();
+              emblaApi.scrollPrev();
+              lastScrollTime = now;
+            }
+          }
+        }
+      }
+    };
+
+    rootNode.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      rootNode.removeEventListener("wheel", handleWheel);
+    };
+  }, [emblaApi]);
 
   const filteredProjects = projects.filter((p) => {
     if (activeCategory === "All") return true;
@@ -251,39 +233,33 @@ export function Projects() {
   });
 
   return (
-    <section id="projects" className="relative py-12 sm:py-28">
-      {/* Static ambient */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute top-0 left-1/4 h-px w-1/2 bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-        <div className="absolute bottom-0 left-1/4 h-px w-1/2 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent" />
-      </div>
-
-      <div className="mx-auto max-w-7xl px-5 sm:px-6">
+    <section id="projects" className="relative py-16 sm:py-28 overflow-hidden">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 relative z-10">
 
         {/* Header */}
         <header
           ref={headRef}
-          className="project-reveal flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16"
+          className="project-reveal flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-16"
           data-visible={undefined}
         >
           <div className="max-w-2xl">
-            <p className="text-[10px] uppercase tracking-[0.35em] text-white/30 mb-4 font-semibold">
+            <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-soft mb-5 font-bold font-mono">
               Selected Work
             </p>
-            <h2 className="text-[clamp(1.85rem,4.5vw,3.5rem)] font-bold tracking-tight text-platinum leading-[1.05]">
-              Project builds for
+            <h2 className="text-[clamp(3rem,8vw,6.5rem)] font-anton uppercase text-white tracking-tighter leading-[0.82] mix-blend-screen">
+              Everything
               <br />
-              <span className="italic font-light text-silver-glow">real-world businesses.</span>
+              <span className="text-[#38bdf8] drop-shadow-[0_0_35px_rgba(56,189,248,0.3)] select-none">In Excess</span>
             </h2>
           </div>
-          <p className="text-white/45 max-w-xs text-sm leading-relaxed">
-            A curated selection of recent engagements — from AI automation to enterprise ERP.
+          <p className="text-white/45 max-w-xs text-sm leading-relaxed pb-2 font-light">
+            A curated selection of recent engagements — from AI automation to enterprise ERP. Built to perfection.
           </p>
         </header>
 
-        {/* Premium Category Filter Bar - scrollable on mobile */}
+        {/* Category Filters Bar */}
         <div className="flex gap-2 pt-2 mb-10 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1">
-          {projectCategories.map((cat) => {
+          {["All", "AI Automation", "ERPNext", "Mobile Apps"].map((cat) => {
             const active = activeCategory === cat;
             return (
               <button
@@ -299,50 +275,54 @@ export function Projects() {
             );
           })}
         </div>
+      </div>
 
-        {/* Cards */}
-        <div className="relative">
-          <AnimatePresence mode="popLayout">
-            {isMobile ? (
-              <motion.div
-                layout
-                className="grid gap-5"
-                key={`mobile-grid-${activeCategory}`}
-              >
-                {filteredProjects.map((p, i) => (
-                  <motion.div
-                    layout
-                    key={p.title}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 15 }}
-                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <MobileCard p={p} i={i} />
-                  </motion.div>
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                layout
-                className="space-y-0"
-                key={`desktop-grid-${activeCategory}`}
-              >
-                {filteredProjects.map((p, i) => (
-                  <motion.div
-                    layout
-                    key={p.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <DesktopRow p={p} i={i} total={filteredProjects.length} />
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+      <div className="w-full relative px-5 sm:px-6 md:px-8 z-10">
+        <div className="overflow-hidden cursor-grab active:cursor-grabbing -mx-5 sm:-mx-6 md:-mx-8 px-5 sm:px-6 md:px-8 py-8" ref={emblaRef} data-cursor="drag">
+          <div className="flex backface-hidden">
+            <AnimatePresence mode="wait">
+              {filteredProjects.map((p, i) => (
+                <motion.div
+                  key={p.title}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex-[0_0_85vw] sm:flex-[0_0_400px] md:flex-[0_0_450px] min-w-0 mr-6 sm:mr-10 last:mr-0"
+                >
+                  <GTAProjectCard p={p} i={i} total={filteredProjects.length} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Custom Progress Bar Indicator & Navigation */}
+        <div className="max-w-7xl mx-auto mt-6 px-5 sm:px-6 flex items-center justify-between gap-6">
+          {/* Scroll progress line */}
+          <div className="flex-1 h-[2px] bg-white/10 rounded-full overflow-hidden relative">
+            <div 
+              className="absolute top-0 left-0 bottom-0 bg-cyan-soft rounded-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(103,232,249,0.4)]"
+              style={{ width: `${scrollProgress}%` }}
+            />
+          </div>
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={() => emblaApi?.scrollPrev()}
+              className="w-10 h-10 rounded-full border border-white/10 hover:border-white/30 text-white/50 hover:text-white flex items-center justify-center transition-all hover:bg-white/5 active:scale-95"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={() => emblaApi?.scrollNext()}
+              className="w-10 h-10 rounded-full border border-white/10 hover:border-white/30 text-white/50 hover:text-white flex items-center justify-center transition-all hover:bg-white/5 active:scale-95"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
     </section>

@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
-import dodoxLogo from "@/assets/dodox-logo.png";
+import whatsappIcon from "@/assets/whatsapp.svg";
+import erpnextScreenshot from "@/assets/1.webp";
+import reactScreenshot from "@/assets/2.webp";
+import aiScreenshot from "@/assets/3.webp";
+import logoSquare from "@/assets/logo-square.webp";
+import fullLogo from "@/assets/Group 2602.svg";
 
 const links = [
   { href: "#home", label: "Home" },
@@ -35,20 +40,17 @@ export function Navbar() {
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled || open ? "py-3" : "py-5"}`}
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${scrolled || open ? "py-2 sm:py-3" : "py-3 sm:py-5"}`}
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className={`flex items-center justify-between rounded-2xl px-4 sm:px-5 py-3 transition-all duration-500 ${scrolled || open ? "glass-strong" : "bg-transparent"}`}>
+        <div className="mx-auto max-w-7xl px-3 sm:px-6">
+          <div className={`flex items-center justify-between rounded-2xl px-3 sm:px-5 py-2 sm:py-3 transition-all duration-500 ${scrolled || open ? "glass-strong" : "bg-transparent"}`}>
             {/* Logo */}
-            <a href="#home" className="flex items-center gap-1 group" onClick={() => setOpen(false)}>
+            <a href="#home" className="flex items-center shrink-0" onClick={() => setOpen(false)}>
               <img
-                src={dodoxLogo}
+                src={fullLogo}
                 alt="DodoX Tech Logo"
-                className="h-12 w-12 object-contain drop-shadow-[0_0_8px_rgba(103,232,249,0.4)] group-hover:drop-shadow-[0_0_14px_rgba(103,232,249,0.7)] transition-all duration-300"
+                className="h-10 sm:h-12 w-auto object-contain transition-all duration-300"
               />
-              <span className="font-semibold tracking-tight text-white">
-                DodoX <span className="text-[var(--cyan-soft)]">Tech</span>
-              </span>
             </a>
 
             {/* Desktop nav */}
@@ -65,16 +67,16 @@ export function Navbar() {
               ))}
             </nav>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               {/* CTA */}
               <a
                 href="#contact"
                 onClick={() => setOpen(false)}
-                className="inline-flex items-center gap-1.5 rounded-full silver-gradient text-[#030712] px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-medium ambient-halo hover:-translate-y-0.5 transition"
+                className="inline-flex items-center gap-1 rounded-full silver-gradient text-[#030712] px-3 sm:px-5 py-1.5 sm:py-2.5 text-[11px] sm:text-sm font-medium ambient-halo hover:-translate-y-0.5 transition whitespace-nowrap"
               >
                 <span className="hidden sm:inline">Start Project</span>
                 <span className="sm:hidden">Start</span>
-                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </a>
 
               {/* Hamburger */}

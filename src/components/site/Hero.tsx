@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue } from "fram
 import { ArrowRight, Sparkles } from "lucide-react";
 import { CodeWindow } from "./CodeWindow";
 import { useRef, useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const TAGLINES = ["Build Smarter.", "Scale Faster.", "Automate More.", "Ship Sooner."];
 
@@ -37,18 +38,18 @@ function Typewriter() {
 
 /* ─── Floating cosmic micro-stars around the headline ────────────────────── */
 const STAR_DATA = [
-  { x: "4%",  y: "18%", d: 0.0, s: 1.5, c: "#67e8f9" },
+  { x: "4%", y: "18%", d: 0.0, s: 1.5, c: "#67e8f9" },
   { x: "12%", y: "72%", d: 0.9, s: 1.0, c: "#ffffff" },
-  { x: "22%", y: "8%",  d: 1.7, s: 2.0, c: "#c084fc" },
+  { x: "22%", y: "8%", d: 1.7, s: 2.0, c: "#c084fc" },
   { x: "33%", y: "88%", d: 0.4, s: 1.0, c: "#ffffff" },
-  { x: "45%", y: "4%",  d: 2.2, s: 1.5, c: "#67e8f9" },
+  { x: "45%", y: "4%", d: 2.2, s: 1.5, c: "#67e8f9" },
   { x: "58%", y: "92%", d: 0.7, s: 1.0, c: "#c084fc" },
   { x: "68%", y: "12%", d: 1.3, s: 2.0, c: "#ffffff" },
   { x: "78%", y: "58%", d: 0.2, s: 1.0, c: "#67e8f9" },
   { x: "88%", y: "26%", d: 1.9, s: 1.5, c: "#ffffff" },
   { x: "96%", y: "75%", d: 0.6, s: 1.0, c: "#c084fc" },
   { x: "50%", y: "48%", d: 3.1, s: 1.5, c: "#67e8f9" },
-  { x: "7%",  y: "45%", d: 2.5, s: 1.0, c: "#ffffff" },
+  { x: "7%", y: "45%", d: 2.5, s: 1.0, c: "#ffffff" },
 ];
 
 function CosmicStars() {
@@ -67,83 +68,33 @@ function CosmicStars() {
   );
 }
 
-/* ─── Single word animation ───────────────────────────────────────────────── */
 function CosmicWord({
   word,
   delay,
   cls = "text-platinum",
-  isMobile = false,
 }: {
   word: string;
   delay: number;
   cls?: string;
-  isMobile?: boolean;
 }) {
-  if (isMobile) {
-    // Mobile: GPU-friendly — simple opacity + translateY, zero blur/scale
-    return (
-      <span className="relative inline-block mr-[0.22em] last:mr-0">
-        <motion.span
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] }}
-          className={`inline-block ${cls}`}
-        >
-          {word}
-        </motion.span>
-        {/* Landing flash — cheap CSS transform only */}
-        <motion.span
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: [0, 1, 0], opacity: [0, 0.9, 0] }}
-          transition={{ duration: 0.4, delay: delay + 0.28, ease: "easeOut" }}
-          className="absolute -bottom-0.5 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#67e8f9] to-transparent pointer-events-none"
-          style={{ originX: "50%" }}
-        />
-      </span>
-    );
-  }
-
-  // Desktop: full cosmic space-warp effect
   return (
     <span className="relative inline-block mr-[0.22em] last:mr-0">
-      {/* Vertical beam above word */}
+      {/* Word — smooth space zoom-in reveal */}
       <motion.span
-        initial={{ scaleY: 0, opacity: 0 }}
-        animate={{ scaleY: [0, 1, 0], opacity: [0, 0.55, 0] }}
-        transition={{ duration: 0.35, delay: delay - 0.05, ease: "easeOut" }}
-        className="absolute left-1/2 -translate-x-1/2 bottom-full w-px h-10 bg-gradient-to-t from-[#67e8f9]/80 via-[#67e8f9]/30 to-transparent pointer-events-none"
-        style={{ originY: 1 }}
-      />
-      {/* Word — zoom warp from deep space */}
-      <motion.span
-        initial={{ opacity: 0, y: -48, scale: 0.15, filter: "blur(18px) brightness(4)" }}
-        animate={{
-          opacity: [0, 1, 1],
-          y: [-48, 6, 0],
-          scale: [0.15, 1.07, 1],
-          filter: ["blur(18px) brightness(4)", "blur(1px) brightness(1.8)", "blur(0px) brightness(1)"],
-        }}
-        transition={{ duration: 0.85, delay, ease: [0.16, 1, 0.3, 1], times: [0, 0.55, 1] }}
+        initial={{ opacity: 0, y: 15, scale: 0.94 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.65, delay, ease: [0.16, 1, 0.3, 1] }}
         className={`inline-block ${cls}`}
       >
         {word}
       </motion.span>
-      {/* Landing flash */}
+      {/* Landing horizontal glow flash line */}
       <motion.span
         initial={{ scaleX: 0, opacity: 0 }}
-        animate={{ scaleX: [0, 1, 0], opacity: [0, 1, 0] }}
-        transition={{ duration: 0.55, delay: delay + 0.3, ease: "easeOut" }}
+        animate={{ scaleX: [0, 1, 0], opacity: [0, 0.85, 0] }}
+        transition={{ duration: 0.45, delay: delay + 0.25, ease: "easeOut" }}
         className="absolute -bottom-0.5 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#67e8f9] to-transparent pointer-events-none"
         style={{ originX: "50%" }}
-      />
-      {/* Afterglow halo */}
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0.35, 0] }}
-        transition={{ duration: 1.2, delay: delay + 0.2, ease: "easeOut" }}
-        className="absolute inset-0 pointer-events-none"
-        style={{ textShadow: "0 0 30px rgba(103,232,249,0.9)", filter: "blur(8px)" }}
-        aria-hidden="true"
       />
     </span>
   );
@@ -197,26 +148,26 @@ function MagneticWrapper({ children, strength = 0.3 }: { children: React.ReactNo
 /* ─── Hero Section ────────────────────────────────────────────────────────── */
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const isMobile = useIsMobile();
 
   const { scrollYProgress } = useScroll({
     target: isMobile ? undefined : sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const bgY   = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : "15%"]);
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : "15%"]);
   const textY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : "8%"]);
   const cardY = useTransform(scrollYProgress, [0, 1], ["0%", isMobile ? "0%" : "-5%"]);
 
   const scrollRotateX = useTransform(scrollYProgress, [0, 1], [0, 22]);
   const scrollRotateY = useTransform(scrollYProgress, [0, 1], [0, -12]);
-  const scrollZ       = useTransform(scrollYProgress, [0, 1], [0, -180]);
-  const scrollScale   = useTransform(scrollYProgress, [0, 1], [1, 0.88]);
+  const scrollZ = useTransform(scrollYProgress, [0, 1], [0, -180]);
+  const scrollScale = useTransform(scrollYProgress, [0, 1], [1, 0.88]);
 
-  const mouseX   = useMotionValue(0);
-  const mouseY   = useMotionValue(0);
-  const rotateX  = useTransform(mouseY, [-300, 300], [12, -12]);
-  const rotateY  = useTransform(mouseX, [-300, 300], [-12, 12]);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-300, 300], [12, -12]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-12, 12]);
   const springRX = useSpring(rotateX, { stiffness: 160, damping: 32 });
   const springRY = useSpring(rotateY, { stiffness: 160, damping: 32 });
 
@@ -229,10 +180,10 @@ export function Hero() {
 
   // Staggered word timings
   const WORDS = [
-    { w: "Still",     delay: 0.12 },
-    { w: "Managing",  delay: 0.28 },
-    { w: "Your",      delay: 0.44 },
-    { w: "Business",  delay: 0.60 },
+    { w: "Still", delay: 0.12 },
+    { w: "Managing", delay: 0.28 },
+    { w: "Your", delay: 0.44 },
+    { w: "Business", delay: 0.60 },
     { w: "Manually?", delay: 0.76 },
   ];
 
@@ -266,7 +217,9 @@ export function Hero() {
             className="inline-flex items-center gap-2 rounded-full glass px-3.5 py-1.5 text-xs text-white/70 mb-3 sm:mb-6"
           >
             <Sparkles className="h-3.5 w-3.5 text-[var(--cyan-soft)]" />
-            Next-gen DodoX Tech studio · 2026
+            Next-gen DodoX Tech studio
+            <span className="mx-1.5 text-white/30">·</span>
+            2026
           </motion.div>
 
           {/* ── Cosmic headline block ── */}
@@ -301,12 +254,12 @@ export function Hero() {
             <h1 className="text-[clamp(2.4rem,4vw,3.6rem)] leading-[1.1] font-semibold tracking-tight">
               <span className="block sm:inline">
                 {WORDS.slice(0, 3).map(({ w, delay }) => (
-                  <CosmicWord key={w} word={w} delay={delay} isMobile={isMobile} />
+                  <CosmicWord key={w} word={w} delay={delay} />
                 ))}
               </span>
               <span className="block sm:inline">
                 {WORDS.slice(3).map(({ w, delay }) => (
-                  <CosmicWord key={w} word={w} delay={delay} isMobile={isMobile} />
+                  <CosmicWord key={w} word={w} delay={delay} />
                 ))}
               </span>
             </h1>
@@ -326,7 +279,7 @@ export function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: isMobile ? 0.6 : 1.1 }}
+            transition={{ duration: 0.7, delay: 1.1 }}
             className="mt-3 sm:mt-6 max-w-xl text-sm sm:text-base text-white/60 leading-relaxed"
           >
             DodoX Tech builds custom digital solutions that automate business operations,
@@ -337,7 +290,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: isMobile ? 0.75 : 1.25 }}
+            transition={{ duration: 0.7, delay: 1.25 }}
             className="mt-4 sm:mt-8 flex flex-row flex-wrap items-center gap-3"
           >
             <MagneticWrapper>
@@ -363,7 +316,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: isMobile ? 0.9 : 1.5, duration: 0.7 }}
+            transition={{ delay: 1.4, duration: 0.7 }}
             className="mt-4 sm:mt-10 flex flex-wrap justify-start items-center gap-x-4 gap-y-1.5 sm:gap-x-8 text-[9px] sm:text-xs uppercase tracking-[0.2em] text-white/30"
           >
             {["ERPNext", "React", "AI Automation", "Mobile App", "DevOps & Cloud"].map((tech) => (
@@ -443,7 +396,7 @@ export function Hero() {
                 className="absolute -right-4 bottom-10 glass-strong rounded-2xl px-4 py-3 hidden md:block cursor-default shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-white/10"
               >
                 <div className="text-[10px] uppercase tracking-widest text-white/50">Workflows</div>
-                <div className="text-xl font-semibold text-platinum">+82 automated</div>
+                <div className="text-xl font-semibold text-platinum">+15 automated</div>
               </motion.div>
 
               <motion.div style={{ z: 40, transformStyle: "preserve-3d" }}
@@ -453,7 +406,7 @@ export function Hero() {
                 className="absolute -right-2 top-6 glass-strong rounded-2xl px-3 py-2 hidden md:block shadow-[0_10px_20px_rgba(0,0,0,0.4)] border border-white/10"
               >
                 <div className="text-[10px] uppercase tracking-widest text-white/50">Clients</div>
-                <div className="text-base font-semibold text-[var(--cyan-soft)]">50+ ✓</div>
+                <div className="text-base font-semibold text-[var(--cyan-soft)]">10+ ✓</div>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -475,11 +428,11 @@ export function Hero() {
             </div>
             <div className="glass-strong rounded-xl px-2.5 py-1.5">
               <div className="text-[8px] uppercase tracking-widest text-white/40">Clients</div>
-              <div className="text-sm font-semibold text-[var(--cyan-soft)]">50+ ✓</div>
+              <div className="text-sm font-semibold text-[var(--cyan-soft)]">10+ ✓</div>
             </div>
             <div className="glass-strong rounded-xl px-2.5 py-1.5">
               <div className="text-[8px] uppercase tracking-widest text-white/40">Workflows</div>
-              <div className="text-sm font-semibold text-platinum">+82</div>
+              <div className="text-sm font-semibold text-platinum">+15</div>
             </div>
           </div>
         </motion.div>
