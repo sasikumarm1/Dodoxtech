@@ -148,8 +148,6 @@ export const sendContactEmail = createServerFn({ method: "POST" })
         `,
       };
 
-      await transporter.sendMail(mailOptions);
-
       // Auto-reply to the user
       const autoReplyOptions = {
         from: `"DodoX Tech" <dodoxtechstudio@gmail.com>`,
@@ -308,7 +306,10 @@ export const sendContactEmail = createServerFn({ method: "POST" })
         `,
       };
 
-      await transporter.sendMail(autoReplyOptions);
+      await Promise.all([
+        transporter.sendMail(mailOptions),
+        transporter.sendMail(autoReplyOptions),
+      ]);
       return { success: true };
     } catch (error) {
       console.error("Failed to send contact email:", error);

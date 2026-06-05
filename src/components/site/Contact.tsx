@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import { Linkedin, Mail, Send, ArrowUpRight, MapPin, CheckCircle2, User, Briefcase, Coins, MessageSquare, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { sendContactEmail } from "@/lib/mail";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 
 export function Contact() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +28,8 @@ export function Contact() {
       const response = await sendContactEmail({ data });
       if (response && response.success) {
         setSent(true);
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        formRef.current?.reset();
+        setTimeout(() => setSent(false), 2500);
       } else {
         throw new Error("Failed to send message");
       }
@@ -191,6 +191,7 @@ export function Contact() {
         {/* Column 3 - Center Centered Premium Form Card */}
         <div className="max-w-3xl mx-auto w-full">
           <motion.form
+            ref={formRef}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
