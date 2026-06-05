@@ -27,6 +27,9 @@ export function Contact() {
       const response = await sendContactEmail({ data });
       if (response && response.success) {
         setSent(true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       } else {
         throw new Error("Failed to send message");
       }

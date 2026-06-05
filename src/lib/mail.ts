@@ -298,7 +298,7 @@ export const sendContactEmail = createServerFn({ method: "POST" })
                 </a>
 
                 <div class="footer">
-                  You're receiving this because you contacted us at <a href="https://dodoxtech.com">dodoxtech.com</a>.<br/>
+                  You're receiving this because you contacted us at <a href="https://dodoxtechs.in">dodoxtechs.in</a>.<br/>
                   DodoX Tech Studio · Coimbatore, Tamil Nadu, India<br/>
                   <a href="mailto:dodoxtechstudio@gmail.com">dodoxtechstudio@gmail.com</a>
                 </div>
